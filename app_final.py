@@ -46,6 +46,27 @@ TARGET_FIELDS = [
     "Attribute_3_Label", "Attribute_3_Value", "Attribute_3_UOM",
 ]
 
+# Maps our internal field names to the ACTUAL Delivery Format column headers
+# (confirmed from the real spec file -- these use different casing/spacing
+# than a naive guess would, e.g. a space before the attribute number, not
+# an underscore, and ALL CAPS for most description fields).
+GT_COLUMN_MAP = {
+    "Classpath": "Classpath",
+    "Invoice_Desc": "INVOICE_DESC",
+    "Mobile_Desc": "MOBILE_DESC",
+    "Short_Desc": "SHORT_DESC",
+    "Long_Desc": "LONG_DESC1",
+    "Attribute_1_Label": "ATTRIBUTE_LABEL 1",
+    "Attribute_1_Value": "ATTRIBUTE_VALUE 1",
+    "Attribute_1_UOM": "ATTRIBUTE_UOM 1",
+    "Attribute_2_Label": "ATTRIBUTE_LABEL 2",
+    "Attribute_2_Value": "ATTRIBUTE_VALUE 2",
+    "Attribute_2_UOM": "ATTRIBUTE_UOM 2",
+    "Attribute_3_Label": "ATTRIBUTE_LABEL 3",
+    "Attribute_3_Value": "ATTRIBUTE_VALUE 3",
+    "Attribute_3_UOM": "ATTRIBUTE_UOM 3",
+}
+
 PROMPT_TEMPLATE = """You are a product data enrichment assistant for an industrial distribution catalog (Unilog).
 
 You will be given ONE raw catalog row. Produce a JSON object with EXACTLY these keys:
@@ -141,14 +162,29 @@ def needs_review(record: dict) -> tuple[bool, list[str]]:
 # ============================================================
 # SCORING AGAINST GROUND TRUTH
 # ============================================================
-def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame, key_col: str) -> pd.DataFrame:
-    """Field-level exact-match rate (case/whitespace-insensitive) between
-    generated output and the known-good Delivery Format rows, joined on
-    the part number key. Only scores columns present in both frames."""
-    shared_cols = [c for c in TARGET_FIELDS if c in truth_df.columns]
-    merged = results_df.merge(truth_df, on=key_col, suffixes=("_gen", "_truth"))
+# Fields where exact string match is a fair test (short, structured, low
+# wording freedom). Description fields are excluded from "accuracy" scoring
+# because two correct sentences can be worded differently -- those need a
+# human eyeball pass instead, so we surface them side-by-side rather than
+# score them as right/wrong.
+EXACT_MATCH_FIELDS = [
+    "Classpath",
+    "Attribute_1_Label", "Attribute_1_Value", "Attribute_1_UOM",
+    "Attribute_2_Label", "Attribute_2_Value", "Attribute_2_UOM",
+    "Attribute_3_Label", "Attribute_3_Value", "Attribute_3_UOM",
+]
+FREE_TEXT_FIELDS = ["Invoice_Desc", "Mobile_Desc", "Short_Desc", "Long_Desc"]
+
+
+def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame, key_col: str):
+    """Returns (score_df, side_by_side_df). score_df is exact-match % for
+    structured fields only. side_by_side_df lets you manually compare the
+    free-text description fields, which shouldn't be scored as exact match."""
+    truth_renamed = truth_df.rename(columns={v: k for k, v in GT_COLUMN_MAP.items() if v in truth_df.columns})
+    merged = results_df.merge(truth_renamed, on=key_col, suffixes=("_gen", "_truth"))
+
     rows = []
-    for col in shared_cols:
+    for col in EXACT_MATCH_FIELDS:
         gen_col, truth_col = f"{col}_gen", f"{col}_truth"
         if gen_col not in merged.columns or truth_col not in merged.columns:
             continue
@@ -156,7 +192,17 @@ def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame,
         truth = merged[truth_col].astype(str).str.strip().str.lower()
         match_rate = (gen == truth).mean() if len(merged) else 0.0
         rows.append({"Field": col, "Rows Compared": len(merged), "Exact Match %": round(match_rate * 100, 1)})
-    return pd.DataFrame(rows)
+    score_df = pd.DataFrame(rows)
+
+    side_cols = [key_col]
+    for col in FREE_TEXT_FIELDS:
+        for suffix in ("_gen", "_truth"):
+            c = f"{col}{suffix}"
+            if c in merged.columns:
+                side_cols.append(c)
+    side_by_side_df = merged[side_cols] if len(merged) else pd.DataFrame()
+
+    return score_df, side_by_side_df
 
 
 # ============================================================
@@ -236,9 +282,20 @@ with tab_score:
         st.info("Run an extraction in the first tab before scoring.")
     elif truth_file is not None:
         truth_df = pd.read_excel(truth_file) if truth_file.name.endswith("xlsx") else pd.read_csv(truth_file)
-        score_df = score_against_ground_truth(st.session_state["results_df"], truth_df, key_col="Mfg_Part_Num")
+        score_df, side_by_side_df = score_against_ground_truth(
+            st.session_state["results_df"], truth_df, key_col="Mfg_Part_Num"
+        )
         if score_df.empty:
-            st.warning("No matching key or overlapping target columns found between your output and this ground-truth file. Check column names line up (e.g. rename ground-truth columns to match TARGET_FIELDS, or adjust the key_col).")
+            st.warning(
+                "No matching rows found. Double-check: (1) both files actually share "
+                "Mfg_Part_Num values -- e.g. you extracted from the 1000-item file but "
+                "uploaded the 200-item ground truth, which won't overlap much, and "
+                "(2) the ground-truth file's column headers match GT_COLUMN_MAP in the code."
+            )
         else:
+            st.subheader("Structured fields (exact match)")
             st.dataframe(score_df)
-            st.metric("Overall average field accuracy", f"{score_df['Exact Match %'].mean():.1f}%")
+            st.metric("Overall structured-field accuracy", f"{score_df['Exact Match %'].mean():.1f}%")
+
+            st.subheader("Description fields (compare manually -- wording can differ and still be correct)")
+            st.dataframe(side_by_side_df)
