@@ -3,18 +3,23 @@
 ![GitHub last commit](https://img.shields.io/github/last-commit/KevinJonathan7708/unihack-hackathon-mvp)
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
-## Overview
+## 🌐 Live Demo
+Experience the live application here: **[UniHack - Product Intelligence · Streamlit](https://unihack-hackathon-mvp-wrpbcvmhlwsg5bdryxfmyw.streamlit.app/)**
+
+---
+
+## 🚀 Overview
 Welcome to the MVP repository for the UniHack Hackathon! This project provides a robust data enrichment pipeline designed to solve incomplete Product Information Management (PIM) data. 
 
 By leveraging automation in `app_final.py`, the pipeline ingests minimal product identifiers and aggressively enriches them, generating everything from marketing descriptions and SEO-friendly metadata to granular technical attributes (e.g., voltages, dimensions, sound levels) and media URLs.
 
-## Repository Structure
+## 📁 Repository Structure
 As seen in `image_51a3fe.png`, the core of the repository consists of:
-*   **`app_final.py`**: The main application script containing the pipeline logic.
+*   **`app_final.py`**: The main application Streamlit script containing the pipeline logic.
 *   **`requirements.txt`**: The list of Python dependencies required to run the pipeline.
 *   **`README.md`**: Project documentation (this file).
 
-## Dataset Reference
+## 📊 Dataset Reference
 To understand the pipeline's transformation capabilities, we have provided two reference files:
 
 ### 1. The Input
@@ -49,15 +54,15 @@ This file demonstrates the final, enriched delivery format. The pipeline maps th
     pip install -r requirements.txt
     ```
 
-3.  **Run the application:**
+3.  **Run the application locally:**
     ```bash
-    python app_final.py
+    streamlit run app_final.py
     ```
 
-## Built With
+## 🛠️ Built With
 *   Python 3
+*   Streamlit (for the web interface)
 *   Pandas (for complex data transformations)
-*   *Add any other specific ML/Scraping libraries used in your app_final.py*
 
-## Use Case
+## 💡 Use Case
 This MVP is built to automate away the hundreds of manual hours typically required by e-commerce managers and data stewards to clean, standardize, and enrich product catalogs before going to market.
