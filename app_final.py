@@ -159,6 +159,52 @@ def needs_review(record: dict) -> tuple[bool, list[str]]:
     return len(issues) > 0, issues
 
 
+APPROVED_UOM = {
+    "in", "ft", "mm", "cm", "m", "v", "a", "w", "kw", "hp", "dba", "db",
+    "lb", "lbs", "kg", "g", "oz", "gal", "l", "ml", "psi", "rpm", "hz",
+    "gpm", "cfm", "amp", "amps", "volt", "volts",
+}
+
+
+def rule_based_self_check(df: pd.DataFrame) -> pd.DataFrame:
+    """Validates output WITHOUT needing a ground-truth answer key -- checks
+    the things you can verify from the content guidelines alone: format
+    rules, placeholder leakage, valid units, and whether attribute values
+    are actually traceable back to the source description (catches
+    invented specs)."""
+    rows = []
+    for _, r in df.iterrows():
+        issues = []
+
+        invoice = str(r.get("Invoice_Desc") or "")
+        if invoice and len(invoice) > 40:
+            issues.append(f"Invoice_Desc is {len(invoice)} chars (limit 40)")
+        if invoice and invoice != invoice.upper():
+            issues.append("Invoice_Desc is not ALL CAPS")
+
+        source_text = f"{r.get('Mfg_Part_Num', '')} {r.get('Part_Desc', '')}".lower()
+        for field_val in [r.get(f) for f in TARGET_FIELDS]:
+            fv = str(field_val or "")
+            if fv.strip().lower() in PLACEHOLDER_VALUES:
+                issues.append(f"Placeholder value leaked into output: '{fv}'")
+
+        for i in (1, 2, 3):
+            uom = r.get(f"Attribute_{i}_UOM")
+            if uom and str(uom).strip().lower() not in APPROVED_UOM:
+                issues.append(f"Attribute_{i}_UOM '{uom}' not in approved UOM list")
+            value = r.get(f"Attribute_{i}_Value")
+            if value and str(value).strip().lower() not in source_text:
+                issues.append(f"Attribute_{i}_Value '{value}' not traceable to source text (possible invention)")
+
+        rows.append({
+            "Mfg_Part_Num": r.get("Mfg_Part_Num"),
+            "Issues Found": len(issues),
+            "Details": "; ".join(issues) if issues else "Clean",
+            "Passed": len(issues) == 0,
+        })
+    return pd.DataFrame(rows)
+
+
 # ============================================================
 # SCORING AGAINST GROUND TRUTH
 # ============================================================
@@ -230,7 +276,7 @@ if manuf_file is not None:
     master_names = df_master[name_col].dropna().astype(str).unique().tolist()
     st.sidebar.success(f"Loaded {len(master_names)} approved manufacturer/brand names.")
 
-tab_run, tab_score = st.tabs(["🚀 Run Extraction", "📊 Accuracy Report"])
+tab_run, tab_check, tab_score = st.tabs(["🚀 Run Extraction", "✅ Self-Check", "📊 Accuracy Report"])
 
 with tab_run:
     catalog_file = st.file_uploader("Catalog file (Mfg_Part_Num, Part_Desc, Part_Manuf columns required)", type=["xlsx", "csv"])
@@ -273,6 +319,28 @@ with tab_run:
 
             csv = results_df.to_csv(index=False).encode("utf-8")
             st.download_button("⬇️ Download results CSV", csv, "enriched_output.csv", "text/csv")
+
+with tab_check:
+    st.markdown(
+        "No answer key needed for this tab. It checks things you can verify "
+        "from the content guidelines alone: character/casing rules, whether "
+        "placeholder values leaked through, whether units are on the approved "
+        "list, and whether each attribute value can actually be found in the "
+        "source text (a value that isn't there is a value the model invented)."
+    )
+    if "results_df" not in st.session_state:
+        st.info("Run an extraction in the first tab first.")
+    else:
+        check_df = rule_based_self_check(st.session_state["results_df"])
+        pass_rate = check_df["Passed"].mean() * 100 if len(check_df) else 0
+        st.metric("Rows with zero flagged issues", f"{pass_rate:.1f}%")
+        st.dataframe(check_df, use_container_width=True)
+        st.caption(
+            "Note: the traceability check is a plain substring match -- it'll "
+            "false-flag values the model correctly reworded or converted "
+            "(e.g. inferred '12 in' from a description that said '12\"'). "
+            "Treat flags as 'worth a human glance', not automatic failures."
+        )
 
 with tab_score:
     st.markdown("Upload the known-good **Delivery Format** sheet (e.g. the 200-item ground truth) to measure real field-level accuracy.")
