@@ -1,25 +1,25 @@
-# unihack-hackathon-mvp
+# Unihack-hackathon-mvp
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/KevinJonathan7708/unihack-hackathon-mvp)
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
-## 🌐 Live Demo
+## The Live Demo
 Experience the live application here: **[UniHack - Product Intelligence · Streamlit](https://unihack-hackathon-mvp-wrpbcvmhlwsg5bdryxfmyw.streamlit.app/)**
 
 ---
 
-## 🚀 Overview
+## The Overview
 Welcome to the MVP repository for the UniHack Hackathon! This project provides a robust data enrichment pipeline designed to solve incomplete Product Information Management (PIM) data. 
 
 By leveraging automation in `app_final.py`, the pipeline ingests minimal product identifiers and aggressively enriches them, generating everything from marketing descriptions and SEO-friendly metadata to granular technical attributes (e.g., voltages, dimensions, sound levels) and media URLs.
 
-## 📁 Repository Structure
+## Repository Structure
 As seen in `image_51a3fe.png`, the core of the repository consists of:
 *   **`app_final.py`**: The main application Streamlit script containing the pipeline logic.
 *   **`requirements.txt`**: The list of Python dependencies required to run the pipeline.
 *   **`README.md`**: Project documentation (this file).
 
-## 📊 Dataset Reference
+## Dataset Reference
 To understand the pipeline's transformation capabilities, we have provided two reference files:
 
 ### 1. The Input
@@ -41,7 +41,7 @@ This file demonstrates the final, enriched delivery format. The pipeline maps th
 *   **Dynamic Attributes:** 50 dynamically mapped `ATTRIBUTE_LABEL`, `ATTRIBUTE_VALUE`, and `ATTRIBUTE_UOM` (Unit of Measure) fields for precise technical specifications.
 *   **Digital Assets:** Image URLs, `MFR URL`, Specification Sheets, and Warranty documents.
 
-## ⚙️ Installation & Setup
+## Installation & Setup
 
 1.  **Clone the repository:**
     ```bash
@@ -59,7 +59,7 @@ This file demonstrates the final, enriched delivery format. The pipeline maps th
     streamlit run app_final.py
     ```
 
-## 🛠️ Built With
+## Built With
 *   Python 3
 *   Streamlit (for the web interface)
 *   Pandas (for complex data transformations)
