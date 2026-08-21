@@ -1,6 +1,5 @@
 # Unihack-hackathon-mvp
 
-![GitHub last commit](https://img.shields.io/github/last-commit/KevinJonathan7708/unihack-hackathon-mvp)
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
 ## The Live Demo
