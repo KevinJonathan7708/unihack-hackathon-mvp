@@ -225,8 +225,8 @@ def apply_theme(dark_mode: bool) -> None:
 
     st.markdown(f"""
     <style>
-      .stApp {{ background: {colors['bg']}; color: {colors['text']}; }}
-      [data-testid="stHeader"] {{ background: {colors['bg']}; }}
+      html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], section[data-testid="stMain"] {{ background: {colors['bg']} !important; color: {colors['text']} !important; }}
+      [data-testid="stHeader"] {{ background: {colors['bg']} !important; }}
       [data-testid="stSidebar"] {{ background: {colors['surface']}; border-right: 1px solid {colors['border']}; }}
       [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{ color: {colors['muted']} !important; }}
       [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{ color: {colors['text']} !important; }}
@@ -250,8 +250,9 @@ def apply_theme(dark_mode: bool) -> None:
       [data-testid="stMetric"] {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 13px; padding: 15px; }}
       [data-testid="stMetricLabel"] {{ color: {colors['muted']} !important; }}
       [data-testid="stMetricValue"] {{ color: {colors['text']} !important; }}
-      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']}; color: #06111b !important; border: 0; border-radius: 9px; font-weight: 700; }}
-      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']}; color: #06111b !important; filter: brightness(1.08); }}
+      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']} !important; color: #06111b !important; border: 0; border-radius: 9px; font-weight: 700; }}
+      .stButton > button *, [data-testid="stDownloadButton"] > button * {{ color: #06111b !important; fill: #06111b !important; }}
+      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']} !important; color: #06111b !important; filter: brightness(1.08); }}
       [data-testid="stFileUploader"] {{ background: {colors['surface_alt']}; border-radius: 12px; padding: 10px; }}
       [data-testid="stFileUploader"] section {{ border-color: {colors['border']}; background: transparent; }}
       [data-testid="stFileUploader"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; }}
@@ -272,16 +273,18 @@ def apply_theme(dark_mode: bool) -> None:
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
 
-brand_col, theme_col = st.columns([6, 1])
-with brand_col:
-    st.markdown("""
+st.markdown("""
 <div class="brand-bar">
   <div class="brand-mark">U</div>
   <div><div class="brand-name">UniHack</div><div class="brand-subtitle">Product intelligence workspace</div></div>
 </div>
 """, unsafe_allow_html=True)
+
+theme_col, _ = st.columns([1.5, 5.5])
 with theme_col:
-    st.toggle("Dark mode", key="dark_mode", help="Switch between the light and high-contrast dark workspace.")
+    theme_label = "☀ Light mode" if st.session_state.dark_mode else "☾ Dark mode"
+    if st.button(theme_label, key="theme_toggle", use_container_width=True):
+        st.session_state.dark_mode = not st.session_state.dark_mode
 
 apply_theme(st.session_state.dark_mode)
 
