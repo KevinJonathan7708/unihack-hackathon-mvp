@@ -209,64 +209,32 @@ def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame,
 # UI
 # ============================================================
 def apply_theme() -> None:
-    """Style the dashboard using Streamlit's built-in Light/Dark theme tokens."""
-    colors = {
-        "bg": "var(--background-color)",
-        "surface": "var(--secondary-background-color)",
-        "surface_alt": "color-mix(in srgb, var(--secondary-background-color) 82%, var(--background-color))",
-        "text": "var(--text-color)",
-        "muted": "color-mix(in srgb, var(--text-color) 72%, transparent)",
-        "border": "color-mix(in srgb, var(--text-color) 18%, transparent)",
-        "accent": "var(--primary-color)",
-        "accent_dark": "color-mix(in srgb, var(--primary-color) 18%, var(--secondary-background-color))",
-        "shadow": "color-mix(in srgb, var(--text-color) 12%, transparent)",
-    }
-
+    """Apply layout-only styling; Streamlit owns all theme colors."""
     st.markdown(f"""
     <style>
-      html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMain"], section[data-testid="stMain"] {{ background: {colors['bg']} !important; color: {colors['text']} !important; }}
-      [data-testid="stHeader"] {{ background: {colors['bg']} !important; }}
-      [data-testid="stSidebar"] {{ background: {colors['surface']}; border-right: 1px solid {colors['border']}; }}
-      [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{ color: {colors['muted']} !important; }}
-      [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{ color: {colors['text']} !important; }}
-      [data-testid="stSidebarCollapsedControl"], [data-testid="stSidebarCollapseButton"] {{ opacity: 1 !important; }}
-      [data-testid="stSidebarCollapsedControl"] button, [data-testid="stSidebarCollapseButton"] button {{ background: {colors['accent_dark']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; border-radius: 12px !important; opacity: 1 !important; }}
-      [data-testid="stSidebarCollapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg {{ fill: {colors['text']} !important; stroke: {colors['text']} !important; opacity: 1 !important; }}
       .block-container {{ max-width: 1280px; padding-top: 4.25rem; padding-bottom: 3rem; }}
-      .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: .3rem; }}
+      [data-testid="stSidebar"] {{ border-right: 1px solid rgba(128, 128, 128, .22); }}
+      [data-testid="stSidebarCollapsedControl"], [data-testid="stSidebarCollapseButton"] {{ opacity: 1 !important; }}
+      [data-testid="stSidebarCollapsedControl"] button, [data-testid="stSidebarCollapseButton"] button {{ background: rgba(127, 127, 127, .16) !important; border: 1px solid rgba(127, 127, 127, .32) !important; border-radius: 12px !important; opacity: 1 !important; }}
+      [data-testid="stSidebarCollapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg {{ opacity: 1 !important; }}
+      .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: 1.2rem; }}
       .brand-mark {{ width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 11px; background: {colors['accent']}; color: #ffffff; font-weight: 800; font-size: 19px; }}
-      .brand-name {{ color: {colors['text']}; font-size: 1.04rem; font-weight: 740; letter-spacing: -.02em; }}
-      .brand-subtitle {{ color: {colors['muted']}; font-size: .8rem; margin-top: 1px; }}
-      .hero {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 18px;
-        padding: 28px 30px; margin: 1.2rem 0 20px; box-shadow: 0 12px 32px {colors['shadow']}; }}
-      .eyebrow {{ color: {colors['accent']}; font-size: .73rem; font-weight: 760; letter-spacing: .10em; text-transform: uppercase; }}
-      .hero h1 {{ color: {colors['text']}; font-size: 2rem; letter-spacing: -.045em; margin: 7px 0 7px; }}
-      .hero p {{ color: {colors['muted']}; margin: 0; font-size: .98rem; }}
-      .section-label {{ color: {colors['text']}; font-size: 1.08rem; font-weight: 700; margin: 20px 0 6px; }}
-      .stTabs [data-baseweb="tab-list"] {{ gap: 28px; border-bottom: 1px solid {colors['border']}; }}
-      .stTabs [data-baseweb="tab"] {{ color: {colors['muted']}; font-weight: 600; padding: 13px 2px; }}
-      .stTabs [aria-selected="true"] {{ color: {colors['accent']} !important; }}
-      .stTabs [data-baseweb="tab-highlight"] {{ background-color: {colors['accent']}; }}
-      [data-testid="stMetric"] {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 13px; padding: 15px; }}
-      [data-testid="stMetricLabel"] {{ color: {colors['muted']} !important; }}
-      [data-testid="stMetricValue"] {{ color: {colors['text']} !important; }}
-      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']} !important; color: #ffffff !important; border: 0; border-radius: 9px; font-weight: 700; }}
-      .stButton > button *, [data-testid="stDownloadButton"] > button * {{ color: #ffffff !important; fill: #ffffff !important; }}
-      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']} !important; color: #ffffff !important; filter: brightness(1.08); }}
-      [data-testid="stFileUploader"] {{ background: {colors['surface_alt']}; border-radius: 12px; padding: 10px; }}
-      [data-testid="stFileUploader"] section {{ border-color: {colors['border']}; background: transparent; }}
-      [data-testid="stFileUploader"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; }}
-      [data-testid="stFileUploader"] small {{ color: {colors['muted']} !important; }}
-      input, textarea, [data-baseweb="input"] input {{ background: {colors['surface_alt']} !important; color: {colors['text']} !important; -webkit-text-fill-color: {colors['text']} !important; }}
-      [data-baseweb="input"], [data-baseweb="base-input"], [data-testid="stNumberInput"] > div > div {{ background: {colors['surface_alt']} !important; border-color: {colors['border']} !important; }}
-      [data-testid="stNumberInput"] button {{ background: {colors['surface_alt']} !important; color: {colors['text']} !important; }}
-      [data-testid="stToggle"] label span {{ color: {colors['text']} !important; }}
-      div[data-testid="stDataFrame"] {{ border: 1px solid {colors['border']}; border-radius: 12px; overflow: hidden; }}
-      [data-testid="stDataFrame"] * {{ color: {colors['text']}; }}
-      .stAlert {{ border-radius: 10px; color: {colors['text']}; }}
-      p, label, .stCaption, [data-testid="stWidgetLabel"] p {{ color: {colors['muted']}; }}
-      [data-testid="stFileUploader"] label, [data-testid="stNumberInput"] label {{ color: {colors['text']} !important; }}
+        border-radius: 11px; background: #217a50; color: #ffffff; font-weight: 800; font-size: 19px; }}
+      .brand-name {{ font-size: 1.04rem; font-weight: 740; letter-spacing: -.02em; }}
+      .brand-subtitle {{ font-size: .8rem; margin-top: 1px; opacity: .72; }}
+      .hero {{ background: rgba(127, 127, 127, .07); border: 1px solid rgba(127, 127, 127, .22); border-radius: 18px;
+        padding: 28px 30px; margin: 0 0 20px; box-shadow: 0 12px 32px rgba(0, 0, 0, .08); }}
+      .eyebrow {{ color: #217a50; font-size: .73rem; font-weight: 760; letter-spacing: .10em; text-transform: uppercase; }}
+      .hero h1 {{ font-size: 2rem; letter-spacing: -.045em; margin: 7px 0 7px; }}
+      .hero p {{ margin: 0; font-size: .98rem; opacity: .76; }}
+      .section-label {{ font-size: 1.08rem; font-weight: 700; margin: 20px 0 6px; }}
+      .stTabs [data-baseweb="tab-list"] {{ gap: 28px; border-bottom: 1px solid rgba(127, 127, 127, .22); }}
+      .stTabs [data-baseweb="tab"] {{ font-weight: 600; padding: 13px 2px; }}
+      [data-testid="stMetric"] {{ border: 1px solid rgba(127, 127, 127, .22); border-radius: 13px; padding: 15px; }}
+      [data-testid="stFileUploader"] {{ border-radius: 12px; padding: 10px; }}
+      [data-testid="stFileUploader"] section {{ border-color: rgba(127, 127, 127, .32); background: transparent; }}
+      div[data-testid="stDataFrame"] {{ border: 1px solid rgba(127, 127, 127, .22); border-radius: 12px; overflow: hidden; }}
+      .stAlert {{ border-radius: 10px; }}
     </style>
     """, unsafe_allow_html=True)
 
