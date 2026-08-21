@@ -209,12 +209,12 @@ def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame,
 # UI
 # ============================================================
 def apply_theme(dark_mode: bool) -> None:
-    """Apply the dashboard styling without changing pipeline behavior."""
+    """Apply accessible light and dark dashboard themes."""
     if dark_mode:
         colors = {
-            "bg": "#10141d", "surface": "#181f2b", "surface_alt": "#202938",
-            "text": "#f7f9fc", "muted": "#aab5c6", "border": "#303c50",
-            "accent": "#83d4a7", "accent_dark": "#143b2d", "shadow": "rgba(0, 0, 0, .32)",
+            "bg": "#08111f", "surface": "#111c2e", "surface_alt": "#192842",
+            "text": "#f4f8ff", "muted": "#c1cce0", "border": "#2b3d5a",
+            "accent": "#7dd3fc", "accent_dark": "#062b3b", "shadow": "rgba(0, 0, 0, .42)",
         }
     else:
         colors = {
@@ -226,17 +226,19 @@ def apply_theme(dark_mode: bool) -> None:
     st.markdown(f"""
     <style>
       .stApp {{ background: {colors['bg']}; color: {colors['text']}; }}
-      [data-testid="stHeader"] {{ background: transparent; }}
+      [data-testid="stHeader"] {{ background: {colors['bg']}; }}
       [data-testid="stSidebar"] {{ background: {colors['surface']}; border-right: 1px solid {colors['border']}; }}
-      [data-testid="stSidebar"] * {{ color: {colors['text']}; }}
+      [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{ color: {colors['muted']} !important; }}
+      [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{ color: {colors['text']} !important; }}
+      [data-testid="stSidebarCollapsedControl"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; opacity: 1 !important; }}
       .block-container {{ max-width: 1280px; padding-top: 2.1rem; padding-bottom: 3rem; }}
-      .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: 2.35rem; }}
+      .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: .3rem; }}
       .brand-mark {{ width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
         border-radius: 11px; background: {colors['accent']}; color: #08140f; font-weight: 800; font-size: 19px; }}
       .brand-name {{ color: {colors['text']}; font-size: 1.04rem; font-weight: 740; letter-spacing: -.02em; }}
       .brand-subtitle {{ color: {colors['muted']}; font-size: .8rem; margin-top: 1px; }}
       .hero {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 18px;
-        padding: 28px 30px; margin-bottom: 20px; box-shadow: 0 12px 32px {colors['shadow']}; }}
+        padding: 28px 30px; margin: 1.2rem 0 20px; box-shadow: 0 12px 32px {colors['shadow']}; }}
       .eyebrow {{ color: {colors['accent']}; font-size: .73rem; font-weight: 760; letter-spacing: .10em; text-transform: uppercase; }}
       .hero h1 {{ color: {colors['text']}; font-size: 2rem; letter-spacing: -.045em; margin: 7px 0 7px; }}
       .hero p {{ color: {colors['muted']}; margin: 0; font-size: .98rem; }}
@@ -248,13 +250,21 @@ def apply_theme(dark_mode: bool) -> None:
       [data-testid="stMetric"] {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 13px; padding: 15px; }}
       [data-testid="stMetricLabel"] {{ color: {colors['muted']} !important; }}
       [data-testid="stMetricValue"] {{ color: {colors['text']} !important; }}
-      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']}; color: #07150f; border: 0; border-radius: 9px; font-weight: 700; }}
-      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']}; color: #07150f; filter: brightness(1.08); }}
+      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']}; color: #06111b !important; border: 0; border-radius: 9px; font-weight: 700; }}
+      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']}; color: #06111b !important; filter: brightness(1.08); }}
       [data-testid="stFileUploader"] {{ background: {colors['surface_alt']}; border-radius: 12px; padding: 10px; }}
       [data-testid="stFileUploader"] section {{ border-color: {colors['border']}; background: transparent; }}
+      [data-testid="stFileUploader"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; }}
+      [data-testid="stFileUploader"] small {{ color: {colors['muted']} !important; }}
+      input, textarea, [data-baseweb="input"] input {{ background: {colors['surface_alt']} !important; color: {colors['text']} !important; -webkit-text-fill-color: {colors['text']} !important; }}
+      [data-baseweb="input"], [data-baseweb="base-input"], [data-testid="stNumberInput"] > div > div {{ background: {colors['surface_alt']} !important; border-color: {colors['border']} !important; }}
+      [data-testid="stNumberInput"] button {{ background: {colors['surface_alt']} !important; color: {colors['text']} !important; }}
+      [data-testid="stToggle"] label span {{ color: {colors['text']} !important; }}
       div[data-testid="stDataFrame"] {{ border: 1px solid {colors['border']}; border-radius: 12px; overflow: hidden; }}
-      .stAlert {{ border-radius: 10px; }}
-      p, label, .stCaption {{ color: {colors['muted']}; }}
+      [data-testid="stDataFrame"] * {{ color: {colors['text']}; }}
+      .stAlert {{ border-radius: 10px; color: {colors['text']}; }}
+      p, label, .stCaption, [data-testid="stWidgetLabel"] p {{ color: {colors['muted']}; }}
+      [data-testid="stFileUploader"] label, [data-testid="stNumberInput"] label {{ color: {colors['text']} !important; }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -262,19 +272,20 @@ def apply_theme(dark_mode: bool) -> None:
 if "dark_mode" not in st.session_state:
     st.session_state.dark_mode = False
 
-with st.sidebar:
-    st.markdown("### Workspace")
-    st.caption("Configure your enrichment run")
-    st.divider()
-    st.session_state.dark_mode = st.toggle("Dark mode", value=st.session_state.dark_mode)
-
-apply_theme(st.session_state.dark_mode)
-
-st.markdown("""
+brand_col, theme_col = st.columns([6, 1])
+with brand_col:
+    st.markdown("""
 <div class="brand-bar">
   <div class="brand-mark">U</div>
   <div><div class="brand-name">UniHack</div><div class="brand-subtitle">Product intelligence workspace</div></div>
 </div>
+""", unsafe_allow_html=True)
+with theme_col:
+    st.toggle("Dark mode", key="dark_mode", help="Switch between the light and high-contrast dark workspace.")
+
+apply_theme(st.session_state.dark_mode)
+
+st.markdown("""
 <div class="hero">
   <div class="eyebrow">Catalog operations</div>
   <h1>Turn raw product data into ready-to-use intelligence.</h1>
