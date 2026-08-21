@@ -1,4 +1,4 @@
-# Unihack-hackathon-mvp
+# Cookie Warrior : Product Intelligence Workspace
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
