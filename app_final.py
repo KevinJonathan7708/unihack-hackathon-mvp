@@ -242,7 +242,7 @@ def apply_theme() -> None:
 st.markdown("""
 <div class="brand-bar">
   <div class="brand-mark">U</div>
-  <div><div class="brand-name">UniHack</div><div class="brand-subtitle">Product intelligence workspace</div></div>
+  <div><div class="brand-name">Cookie Warrior</div><div class="brand-subtitle">Product intelligence workspace</div></div>
 </div>
 """, unsafe_allow_html=True)
 
