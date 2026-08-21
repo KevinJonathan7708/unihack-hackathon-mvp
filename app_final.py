@@ -9,7 +9,7 @@ import requests
 # ============================================================
 # CONFIG
 # ============================================================
-st.set_page_config(page_title="UniHack — Product Intelligence", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="UniHack — Product Intelligence", page_icon="🍪", layout="wide")
 
 API_KEY = st.secrets.get("GROQ_API_KEY", os.environ.get("GROQ_API_KEY", ""))
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
