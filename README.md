@@ -2,7 +2,7 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
-##Icon
+
 <img width="768" height="691" alt="Cappuccino-Assassino-Viral-TikTok-768x691" src="https://github.com/user-attachments/assets/8586ddfd-f921-477c-ab09-9c4080c05ad8" />
 
 
@@ -71,5 +71,5 @@ This file demonstrates the final, enriched delivery format. The pipeline maps th
 This MVP is built to automate away the hundreds of manual hours typically required by e-commerce managers and data stewards to clean, standardize, and enrich product catalogs before going to market.
 
 
-##App Screenshot
+**##App Screenshot**
 <img width="1512" height="769" alt="Screenshot 2026-08-21 at 11 57 12 PM" src="https://github.com/user-attachments/assets/7fc10104-483b-4527-b4b5-302dc6ca166f" />
