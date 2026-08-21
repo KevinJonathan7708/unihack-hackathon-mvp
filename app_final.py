@@ -21,7 +21,7 @@ import requests
 # ============================================================
 # CONFIG
 # ============================================================
-st.set_page_config(page_title="UniHack - Product Intelligence", page_icon="", layout="wide")
+st.set_page_config(page_title="UniHack — Product Intelligence", page_icon="⚡", layout="wide")
 
 API_KEY = st.secrets.get("GROQ_API_KEY", os.environ.get("GROQ_API_KEY", ""))
 API_URL = "https://api.groq.com/openai/v1/chat/completions"
@@ -208,20 +208,88 @@ def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame,
 # ============================================================
 # UI
 # ============================================================
-st.title("Unihack: Data Enrichment Model")
-st.markdown(
-    "Upload a raw catalog file, enrich it against the target schema, "
-    "and (optionally) score it against the known-good Delivery Format file."
-)
+def apply_theme(dark_mode: bool) -> None:
+    """Apply the dashboard styling without changing pipeline behavior."""
+    if dark_mode:
+        colors = {
+            "bg": "#10141d", "surface": "#181f2b", "surface_alt": "#202938",
+            "text": "#f7f9fc", "muted": "#aab5c6", "border": "#303c50",
+            "accent": "#83d4a7", "accent_dark": "#143b2d", "shadow": "rgba(0, 0, 0, .32)",
+        }
+    else:
+        colors = {
+            "bg": "#f4f6fa", "surface": "#ffffff", "surface_alt": "#f8fafc",
+            "text": "#18212f", "muted": "#657184", "border": "#e4e9f0",
+            "accent": "#217a50", "accent_dark": "#e6f6ed", "shadow": "rgba(27, 39, 57, .10)",
+        }
+
+    st.markdown(f"""
+    <style>
+      .stApp {{ background: {colors['bg']}; color: {colors['text']}; }}
+      [data-testid="stHeader"] {{ background: transparent; }}
+      [data-testid="stSidebar"] {{ background: {colors['surface']}; border-right: 1px solid {colors['border']}; }}
+      [data-testid="stSidebar"] * {{ color: {colors['text']}; }}
+      .block-container {{ max-width: 1280px; padding-top: 2.1rem; padding-bottom: 3rem; }}
+      .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: 2.35rem; }}
+      .brand-mark {{ width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 11px; background: {colors['accent']}; color: #08140f; font-weight: 800; font-size: 19px; }}
+      .brand-name {{ color: {colors['text']}; font-size: 1.04rem; font-weight: 740; letter-spacing: -.02em; }}
+      .brand-subtitle {{ color: {colors['muted']}; font-size: .8rem; margin-top: 1px; }}
+      .hero {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 18px;
+        padding: 28px 30px; margin-bottom: 20px; box-shadow: 0 12px 32px {colors['shadow']}; }}
+      .eyebrow {{ color: {colors['accent']}; font-size: .73rem; font-weight: 760; letter-spacing: .10em; text-transform: uppercase; }}
+      .hero h1 {{ color: {colors['text']}; font-size: 2rem; letter-spacing: -.045em; margin: 7px 0 7px; }}
+      .hero p {{ color: {colors['muted']}; margin: 0; font-size: .98rem; }}
+      .section-label {{ color: {colors['text']}; font-size: 1.08rem; font-weight: 700; margin: 20px 0 6px; }}
+      .stTabs [data-baseweb="tab-list"] {{ gap: 28px; border-bottom: 1px solid {colors['border']}; }}
+      .stTabs [data-baseweb="tab"] {{ color: {colors['muted']}; font-weight: 600; padding: 13px 2px; }}
+      .stTabs [aria-selected="true"] {{ color: {colors['accent']} !important; }}
+      .stTabs [data-baseweb="tab-highlight"] {{ background-color: {colors['accent']}; }}
+      [data-testid="stMetric"] {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 13px; padding: 15px; }}
+      [data-testid="stMetricLabel"] {{ color: {colors['muted']} !important; }}
+      [data-testid="stMetricValue"] {{ color: {colors['text']} !important; }}
+      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']}; color: #07150f; border: 0; border-radius: 9px; font-weight: 700; }}
+      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']}; color: #07150f; filter: brightness(1.08); }}
+      [data-testid="stFileUploader"] {{ background: {colors['surface_alt']}; border-radius: 12px; padding: 10px; }}
+      [data-testid="stFileUploader"] section {{ border-color: {colors['border']}; background: transparent; }}
+      div[data-testid="stDataFrame"] {{ border: 1px solid {colors['border']}; border-radius: 12px; overflow: hidden; }}
+      .stAlert {{ border-radius: 10px; }}
+      p, label, .stCaption {{ color: {colors['muted']}; }}
+    </style>
+    """, unsafe_allow_html=True)
+
+
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
+
+with st.sidebar:
+    st.markdown("### Workspace")
+    st.caption("Configure your enrichment run")
+    st.divider()
+    st.session_state.dark_mode = st.toggle("Dark mode", value=st.session_state.dark_mode)
+
+apply_theme(st.session_state.dark_mode)
+
+st.markdown("""
+<div class="brand-bar">
+  <div class="brand-mark">U</div>
+  <div><div class="brand-name">UniHack</div><div class="brand-subtitle">Product intelligence workspace</div></div>
+</div>
+<div class="hero">
+  <div class="eyebrow">Catalog operations</div>
+  <h1>Turn raw product data into ready-to-use intelligence.</h1>
+  <p>Enrich catalog records, standardize manufacturer data, and validate delivery-quality output from one focused workspace.</p>
+</div>
+""", unsafe_allow_html=True)
 
 if not API_KEY:
-    st.error("ALERT: GROQ_API_KEY not set. Add it to Streamlit Secrets or a local .env file.")
+    st.error("GROQ_API_KEY is not configured. Add it to Streamlit Secrets or your local environment to run enrichment.")
     st.stop()
 
 with st.sidebar:
-    st.header("Reference Files (optional)")
-    manuf_file = st.file_uploader("Manufacturer / Brand master list", type=["xlsx", "csv"])
-    st.caption("Used to normalize Part_Manuf via fuzzy match. Skipped if not provided.")
+    st.markdown("### Reference data")
+    manuf_file = st.file_uploader("Manufacturer / brand master list", type=["xlsx", "csv"])
+    st.caption("Optional. Used to normalize Part_Manuf against approved names.")
 
 master_names = []
 if manuf_file is not None:
@@ -233,12 +301,21 @@ if manuf_file is not None:
 tab_run, tab_score = st.tabs(["Run Extraction", "Accuracy Report"])
 
 with tab_run:
-    catalog_file = st.file_uploader("Catalog file (Mfg_Part_Num, Part_Desc, Part_Manuf columns required)", type=["xlsx", "csv"])
-    row_limit = st.number_input("Rows to process (keep small while testing -- each row is an API call)", min_value=1, max_value=1000, value=10)
+    st.markdown('<div class="section-label">Create an enrichment run</div>', unsafe_allow_html=True)
+    st.caption("Upload a catalog with Mfg_Part_Num, Part_Desc, and Part_Manuf. Each processed row makes one API call.")
+    upload_col, settings_col = st.columns([2.2, 1])
+    with upload_col:
+        catalog_file = st.file_uploader("Catalog file", type=["xlsx", "csv"])
+    with settings_col:
+        row_limit = st.number_input("Rows to process", min_value=1, max_value=1000, value=10)
 
     if catalog_file is not None:
         df = pd.read_excel(catalog_file) if catalog_file.name.endswith("xlsx") else pd.read_csv(catalog_file)
-        st.write(f"Loaded {len(df)} rows. Preview:")
+        summary_a, summary_b, summary_c = st.columns(3)
+        summary_a.metric("Catalog rows", f"{len(df):,}")
+        summary_b.metric("Rows in this run", f"{min(len(df), int(row_limit)):,}")
+        summary_c.metric("Master list", f"{len(master_names):,}" if master_names else "Not loaded")
+        st.markdown('<div class="section-label">Source preview</div>', unsafe_allow_html=True)
         st.dataframe(df.head(5))
 
         if st.button("Extract Intelligence", type="primary"):
@@ -269,13 +346,15 @@ with tab_run:
             results_df = pd.DataFrame(results)
             st.session_state["results_df"] = results_df
             st.success(f"Done. {results_df['Needs_Review'].sum()} of {len(results_df)} rows flagged for review.")
+            st.markdown('<div class="section-label">Enriched records</div>', unsafe_allow_html=True)
             st.dataframe(results_df)
 
             csv = results_df.to_csv(index=False).encode("utf-8")
             st.download_button("⬇️ Download results CSV", csv, "enriched_output.csv", "text/csv")
 
 with tab_score:
-    st.markdown("Upload the known-good **Delivery Format** sheet (e.g. the 200-item ground truth) to measure real field-level accuracy.")
+    st.markdown('<div class="section-label">Validate against delivery format</div>', unsafe_allow_html=True)
+    st.caption("Upload the known-good Delivery Format sheet to review structured-field accuracy and compare generated descriptions.")
     truth_file = st.file_uploader("Ground truth file", type=["xlsx", "csv"], key="truth")
 
     if "results_df" not in st.session_state:
