@@ -208,20 +208,19 @@ def score_against_ground_truth(results_df: pd.DataFrame, truth_df: pd.DataFrame,
 # ============================================================
 # UI
 # ============================================================
-def apply_theme(dark_mode: bool) -> None:
-    """Apply accessible light and dark dashboard themes."""
-    if dark_mode:
-        colors = {
-            "bg": "#08111f", "surface": "#111c2e", "surface_alt": "#192842",
-            "text": "#f4f8ff", "muted": "#c1cce0", "border": "#2b3d5a",
-            "accent": "#7dd3fc", "accent_dark": "#062b3b", "shadow": "rgba(0, 0, 0, .42)",
-        }
-    else:
-        colors = {
-            "bg": "#f4f6fa", "surface": "#ffffff", "surface_alt": "#f8fafc",
-            "text": "#18212f", "muted": "#657184", "border": "#e4e9f0",
-            "accent": "#217a50", "accent_dark": "#e6f6ed", "shadow": "rgba(27, 39, 57, .10)",
-        }
+def apply_theme() -> None:
+    """Style the dashboard using Streamlit's built-in Light/Dark theme tokens."""
+    colors = {
+        "bg": "var(--background-color)",
+        "surface": "var(--secondary-background-color)",
+        "surface_alt": "color-mix(in srgb, var(--secondary-background-color) 82%, var(--background-color))",
+        "text": "var(--text-color)",
+        "muted": "color-mix(in srgb, var(--text-color) 72%, transparent)",
+        "border": "color-mix(in srgb, var(--text-color) 18%, transparent)",
+        "accent": "var(--primary-color)",
+        "accent_dark": "color-mix(in srgb, var(--primary-color) 18%, var(--secondary-background-color))",
+        "shadow": "color-mix(in srgb, var(--text-color) 12%, transparent)",
+    }
 
     st.markdown(f"""
     <style>
@@ -234,13 +233,9 @@ def apply_theme(dark_mode: bool) -> None:
       [data-testid="stSidebarCollapsedControl"] button, [data-testid="stSidebarCollapseButton"] button {{ background: {colors['accent_dark']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; border-radius: 12px !important; opacity: 1 !important; }}
       [data-testid="stSidebarCollapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg {{ fill: {colors['text']} !important; stroke: {colors['text']} !important; opacity: 1 !important; }}
       .block-container {{ max-width: 1280px; padding-top: 4.25rem; padding-bottom: 3rem; }}
-      div.st-key-theme_choice {{ position: fixed; top: 1.15rem; right: 13rem; width: 10.5rem; z-index: 9999; }}
-      div.st-key-theme_choice label {{ color: {colors['text']} !important; font-weight: 700; }}
-      div.st-key-theme_choice [data-baseweb="select"] > div {{ background: {colors['surface_alt']} !important; border-color: {colors['border']} !important; }}
-      div.st-key-theme_choice [data-baseweb="select"] * {{ color: {colors['text']} !important; }}
       .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: .3rem; }}
       .brand-mark {{ width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
-        border-radius: 11px; background: {colors['accent']}; color: #08140f; font-weight: 800; font-size: 19px; }}
+        border-radius: 11px; background: {colors['accent']}; color: #ffffff; font-weight: 800; font-size: 19px; }}
       .brand-name {{ color: {colors['text']}; font-size: 1.04rem; font-weight: 740; letter-spacing: -.02em; }}
       .brand-subtitle {{ color: {colors['muted']}; font-size: .8rem; margin-top: 1px; }}
       .hero {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 18px;
@@ -256,9 +251,9 @@ def apply_theme(dark_mode: bool) -> None:
       [data-testid="stMetric"] {{ background: {colors['surface']}; border: 1px solid {colors['border']}; border-radius: 13px; padding: 15px; }}
       [data-testid="stMetricLabel"] {{ color: {colors['muted']} !important; }}
       [data-testid="stMetricValue"] {{ color: {colors['text']} !important; }}
-      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']} !important; color: #06111b !important; border: 0; border-radius: 9px; font-weight: 700; }}
-      .stButton > button *, [data-testid="stDownloadButton"] > button * {{ color: #06111b !important; fill: #06111b !important; }}
-      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']} !important; color: #06111b !important; filter: brightness(1.08); }}
+      .stButton > button, [data-testid="stDownloadButton"] > button {{ background: {colors['accent']} !important; color: #ffffff !important; border: 0; border-radius: 9px; font-weight: 700; }}
+      .stButton > button *, [data-testid="stDownloadButton"] > button * {{ color: #ffffff !important; fill: #ffffff !important; }}
+      .stButton > button:hover, [data-testid="stDownloadButton"] > button:hover {{ background: {colors['accent']} !important; color: #ffffff !important; filter: brightness(1.08); }}
       [data-testid="stFileUploader"] {{ background: {colors['surface_alt']}; border-radius: 12px; padding: 10px; }}
       [data-testid="stFileUploader"] section {{ border-color: {colors['border']}; background: transparent; }}
       [data-testid="stFileUploader"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; }}
@@ -276,9 +271,6 @@ def apply_theme(dark_mode: bool) -> None:
     """, unsafe_allow_html=True)
 
 
-if "theme_choice" not in st.session_state:
-    st.session_state.theme_choice = "Light Mode"
-
 st.markdown("""
 <div class="brand-bar">
   <div class="brand-mark">U</div>
@@ -286,9 +278,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.selectbox("Theme", ["Light Mode", "Dark Mode"], key="theme_choice")
-
-apply_theme(st.session_state.theme_choice == "Dark Mode")
+apply_theme()
 
 st.markdown("""
 <div class="hero">
