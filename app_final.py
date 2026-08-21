@@ -230,8 +230,14 @@ def apply_theme(dark_mode: bool) -> None:
       [data-testid="stSidebar"] {{ background: {colors['surface']}; border-right: 1px solid {colors['border']}; }}
       [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {{ color: {colors['muted']} !important; }}
       [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {{ color: {colors['text']} !important; }}
-      [data-testid="stSidebarCollapsedControl"] button {{ background: {colors['surface']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; opacity: 1 !important; }}
-      .block-container {{ max-width: 1280px; padding-top: 2.1rem; padding-bottom: 3rem; }}
+      [data-testid="stSidebarCollapsedControl"], [data-testid="stSidebarCollapseButton"] {{ opacity: 1 !important; }}
+      [data-testid="stSidebarCollapsedControl"] button, [data-testid="stSidebarCollapseButton"] button {{ background: {colors['accent_dark']} !important; color: {colors['text']} !important; border: 1px solid {colors['border']} !important; border-radius: 12px !important; opacity: 1 !important; }}
+      [data-testid="stSidebarCollapsedControl"] svg, [data-testid="stSidebarCollapseButton"] svg {{ fill: {colors['text']} !important; stroke: {colors['text']} !important; opacity: 1 !important; }}
+      .block-container {{ max-width: 1280px; padding-top: 4.25rem; padding-bottom: 3rem; }}
+      div.st-key-theme_choice {{ position: fixed; top: 1.15rem; right: 13rem; width: 10.5rem; z-index: 9999; }}
+      div.st-key-theme_choice label {{ color: {colors['text']} !important; font-weight: 700; }}
+      div.st-key-theme_choice [data-baseweb="select"] > div {{ background: {colors['surface_alt']} !important; border-color: {colors['border']} !important; }}
+      div.st-key-theme_choice [data-baseweb="select"] * {{ color: {colors['text']} !important; }}
       .brand-bar {{ display: flex; align-items: center; gap: 13px; margin-bottom: .3rem; }}
       .brand-mark {{ width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;
         border-radius: 11px; background: {colors['accent']}; color: #08140f; font-weight: 800; font-size: 19px; }}
@@ -270,8 +276,8 @@ def apply_theme(dark_mode: bool) -> None:
     """, unsafe_allow_html=True)
 
 
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
+if "theme_choice" not in st.session_state:
+    st.session_state.theme_choice = "Light Mode"
 
 st.markdown("""
 <div class="brand-bar">
@@ -280,13 +286,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-theme_col, _ = st.columns([1.5, 5.5])
-with theme_col:
-    theme_label = "☀ Light mode" if st.session_state.dark_mode else "☾ Dark mode"
-    if st.button(theme_label, key="theme_toggle", use_container_width=True):
-        st.session_state.dark_mode = not st.session_state.dark_mode
+st.selectbox("Theme", ["Light Mode", "Dark Mode"], key="theme_choice")
 
-apply_theme(st.session_state.dark_mode)
+apply_theme(st.session_state.theme_choice == "Dark Mode")
 
 st.markdown("""
 <div class="hero">
