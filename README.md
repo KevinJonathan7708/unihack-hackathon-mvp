@@ -3,8 +3,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/KevinJonathan7708/unihack-hackathon-mvp)
 
 # Presentation File
-[https://docs.google.com/presentation/d/1aIMP835th99UFMHQpl4MgAPKnR2Cl92oVrChp9vztUk/edit?usp=sharing](url)
-
+[![Google Slides](https://shields.io)]([YOUR_GOOGLE_SLIDES_URL_HERE](https://docs.google.com/presentation/d/1aIMP835th99UFMHQpl4MgAPKnR2Cl92oVrChp9vztUk/edit?usp=sharing))
 
 <img width="768" height="691" alt="Cappuccino-Assassino-Viral-TikTok-768x691" src="https://github.com/user-attachments/assets/8586ddfd-f921-477c-ab09-9c4080c05ad8" />
 
